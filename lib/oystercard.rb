@@ -14,4 +14,8 @@ class Oystercard
     raise "Error: top up will exceed balance limit of £#{LIMIT}"
   end
 
+  def deduct(fare)
+    @balance -= fare
+  end
+
 end
