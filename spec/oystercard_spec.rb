@@ -17,11 +17,33 @@ RSpec.describe Oystercard do
   end
 
   describe "#deduct" do
-    it { is_expected.to respond_to(:deduct).with(1).argument }
-
     it "deducts the fare from the balance" do
       # subject.top_up(30)
       expect { subject.deduct 10 }.to change{ subject.balance }. by -10
+    end
+  end
+
+  describe "#touch_in" do
+    it "journey is true when touched in" do
+      expect(subject.touch_in).to be true
+    end
+  end
+
+  describe "#touch_out" do
+    it "journey is true when touched out" do
+      expect(subject.touch_out).to be false
+    end
+  end
+
+  describe "#in_journey?" do
+    it "returns true when user has touched in" do
+      subject.touch_in
+      expect(subject.in_journey?).to be true
+    end
+
+    it "returns false when user has touched in" do
+      subject.touch_out
+      expect(subject.in_journey?).to be false
     end
   end
 
