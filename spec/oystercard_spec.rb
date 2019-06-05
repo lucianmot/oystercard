@@ -9,6 +9,14 @@ RSpec.describe Oystercard do
     expect(subject.balance).to eq(INITIAL_BALANCE)
   end
 
+  it 'return current journey as an array' do
+    expect(subject.current_journey).to eq([])
+  end
+
+  it 'return history as hash' do
+    expect(subject.history).to eq({})
+  end
+
   describe "#top_up" do
     it 'receives a top up' do
       fare = Oystercard::FARE
@@ -52,11 +60,18 @@ RSpec.describe Oystercard do
 
   describe "#touch_out" do
     it "journey is true when touched out" do
-      expect(subject.touch_out).to be false
+      station = Oystercard.new
+      subject.touch_out(station)
+      expect(subject.in_journey?).to be false
     end
     it "if touch out calls out deduct" do
       fare = Oystercard::FARE
-      expect { subject.touch_out }.to change{ subject.balance }. by -fare
+      station = Oystercard.new
+      expect { subject.touch_out station}.to change{ subject.balance }. by -fare
+    end
+    it 'when you touch out station it shows in current_journey' do
+      station = Oystercard.new
+      expect(subject.touch_out station).to eq(subject.current_journey)
     end
   end
 
@@ -70,9 +85,21 @@ RSpec.describe Oystercard do
     end
 
     it "returns false when user has touched in" do
-      subject.touch_out
+      station = Oystercard.new
+      subject.touch_out(station)
       expect(subject.in_journey?).to be false
     end
+  end
+
+  describe '#store' do
+   it 'check if complete journey is moved to history hash' do
+     station = Oystercard.new
+     subject.top_up(50)
+     subject.touch_in(station)
+     subject.touch_out(station)
+     expect(subject.store).to eq(subject.history)
+   end
+
   end
 
 end
