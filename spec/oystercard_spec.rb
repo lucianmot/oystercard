@@ -32,11 +32,21 @@ RSpec.describe Oystercard do
     it "journey is true when touched in" do
       limit = Oystercard::MINIMUM_LIMIT
       subject.top_up(limit)
-      expect(subject.touch_in).to be true
+      station = Oystercard.new
+      subject.touch_in(station)
+      expect(subject.in_journey?).to be true
+    end
+
+    it 'returns the station name' do
+      fare = Oystercard::FARE
+      subject.top_up(fare)
+      expect(subject.touch_in('Bank Station')).to eq(['Bank Station'])
     end
   end
+
     it "raises an error if insufficient funds" do
-      expect { subject.touch_in }.to raise_error('Insufficient funds')
+      station = Oystercard.new
+      expect { subject.touch_in station }.to raise_error('Insufficient funds')
     end
   end
 
@@ -54,7 +64,8 @@ RSpec.describe Oystercard do
     it "returns true when user has successfully touched in" do
       limit = Oystercard::MINIMUM_LIMIT
       subject.top_up(limit)
-      subject.touch_in
+      station = Oystercard.new
+      subject.touch_in(station)
       expect(subject.in_journey?).to be true
     end
 

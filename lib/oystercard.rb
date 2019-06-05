@@ -5,6 +5,7 @@ class Oystercard
   FARE = 10
   def initialize
     @balance = 0
+    @history = []
   end
 
   def top_up(amount)
@@ -15,9 +16,11 @@ class Oystercard
     raise "Error: top up will exceed balance limit of £#{LIMIT}"
   end
 
-  def touch_in
+  def touch_in(station)
     raise "Insufficient funds" if @balance < MINIMUM_LIMIT
+
     @journey = true
+    @history << station
   end
 
   def touch_out
