@@ -2,9 +2,7 @@ require "oystercard"
 
 RSpec.describe Oystercard do
 
-  MINIMUM_LIMIT = 1
   TOP_UP_LIMIT = 90
-  FARE = 10
   INITIAL_BALANCE = 0
 
   it 'has an initial balance' do
@@ -13,7 +11,8 @@ RSpec.describe Oystercard do
 
   describe "#top_up" do
     it 'receives a top up' do
-      expect { subject.top_up FARE }.to change{ subject.balance }. by FARE
+      fare = Oystercard::FARE
+      expect { subject.top_up fare }.to change{ subject.balance }. by fare
     end
 
     it 'has a maximum limit' do
@@ -23,14 +22,16 @@ RSpec.describe Oystercard do
 
   describe "#deduct" do
     it "deducts the fare from the balance" do
-      expect { subject.deduct FARE }.to change{ subject.balance }. by -FARE
+      fare = Oystercard::FARE
+      expect { subject.test_deduct fare }.to change{ subject.balance }. by -fare
     end
   end
 
   describe "#touch_in" do
     context "funds are sufficient" do
     it "journey is true when touched in" do
-      subject.top_up(MINIMUM_LIMIT)
+      limit = Oystercard::MINIMUM_LIMIT
+      subject.top_up(limit)
       expect(subject.touch_in).to be true
     end
   end
@@ -43,11 +44,16 @@ RSpec.describe Oystercard do
     it "journey is true when touched out" do
       expect(subject.touch_out).to be false
     end
+    it "if touch out calls out deduct" do
+      fare = Oystercard::FARE
+      expect { subject.touch_out }.to change{ subject.balance }. by -fare
+    end
   end
 
   describe "#in_journey?" do
     it "returns true when user has successfully touched in" do
-      subject.top_up(MINIMUM_LIMIT)
+      limit = Oystercard::MINIMUM_LIMIT
+      subject.top_up(limit)
       subject.touch_in
       expect(subject.in_journey?).to be true
     end
